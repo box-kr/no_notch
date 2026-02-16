@@ -1,4 +1,5 @@
 import AppKit
+import WebKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
 
@@ -48,11 +49,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func toggleOverlay() {
         overlayManager.toggle()
         updateStatusIcon()
-
-        // Buy Me a Coffee 페이지 노출
-        if let url = URL(string: "https://buymeacoffee.com/funbox.kr") {
-            NSWorkspace.shared.open(url)
-        }
     }
 
     private func updateStatusIcon() {
@@ -99,6 +95,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         menu.addItem(NSMenuItem.separator())
 
+        // Buy Me a Coffee
+        let coffeeItem = NSMenuItem(
+            title: "☕ Buy Me a Coffee",
+            action: #selector(openBuyMeACoffee),
+            keyEquivalent: ""
+        )
+        coffeeItem.target = self
+        menu.addItem(coffeeItem)
+
+        menu.addItem(NSMenuItem.separator())
+
         // 노치 정보
         let notchInfo = NSMenuItem(title: overlayManager.notchInfoString, action: nil, keyEquivalent: "")
         notchInfo.isEnabled = false
@@ -129,11 +136,55 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         LaunchAtLoginManager.toggle()
     }
 
+    @objc private func openBuyMeACoffee() {
+        showBuyMeACoffeeDialog()
+    }
+
     @objc private func quitApp() {
         // 종료 전 원래 해상도로 복원
         if overlayManager.isEnabled {
             overlayManager.disable()
         }
         NSApp.terminate(nil)
+    }
+
+    // MARK: - Buy Me a Coffee Dialog
+
+    private var coffeeWindow: NSWindow?
+
+    private func showBuyMeACoffeeDialog() {
+        // 기존 창이 있으면 앞으로 가져오기
+        if let existingWindow = coffeeWindow, existingWindow.isVisible {
+            existingWindow.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let windowWidth: CGFloat = 480
+        let windowHeight: CGFloat = 700
+
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: windowWidth, height: windowHeight),
+            styleMask: [.titled, .closable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "☕ Buy Me a Coffee"
+        window.center()
+        window.isReleasedWhenClosed = false
+        window.minSize = NSSize(width: 400, height: 500)
+
+        let webView = WKWebView(frame: NSRect(x: 0, y: 0, width: windowWidth, height: windowHeight))
+        webView.autoresizingMask = [.width, .height]
+
+        if let url = URL(string: "https://buymeacoffee.com/funbox.kr") {
+            webView.load(URLRequest(url: url))
+        }
+
+        window.contentView = webView
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+
+        coffeeWindow = window
     }
 }

@@ -23,6 +23,7 @@ echo "📦 소스 파일 컴파일 중..."
 swiftc \
     -o "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}" \
     -framework AppKit \
+    -framework WebKit \
     -framework ServiceManagement \
     -target arm64-apple-macosx12.0 \
     "${PROJECT_DIR}/Sources/NoNotch/NotchOverlayManager.swift" \
