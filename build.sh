@@ -32,8 +32,8 @@ swiftc \
     "${PROJECT_DIR}/Sources/NoNotch/AppDelegate.swift" \
     "${PROJECT_DIR}/Sources/NoNotch/main.swift"
 
-# Info.plist 복사
-cp "${PROJECT_DIR}/Sources/NoNotch/Resources/Info.plist" "${APP_BUNDLE}/Contents/Info.plist"
+# Resources 복사 (Info.plist 포함)
+cp -r "${PROJECT_DIR}/Sources/NoNotch/Resources/"* "${APP_BUNDLE}/Contents/Resources/"
 
 echo "✅ 빌드 완료: ${APP_BUNDLE}"
 echo ""
