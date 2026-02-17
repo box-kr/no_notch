@@ -46,31 +46,31 @@ final class NotchOverlayManager {
 
     /// 노치 정보 문자열
     var notchInfoString: String {
-        guard let screen = NSScreen.main else { return "화면 정보 없음" }
+        guard let screen = NSScreen.main else { return L10n.noScreenInfo }
         let notchHeight = screen.safeAreaInsets.top
         if notchHeight > 0 {
-            return "노치 감지됨 (높이: \(Int(notchHeight))pt)"
+            return L10n.notchDetected(height: Int(notchHeight))
         }
-        return "노치가 감지되지 않음"
+        return L10n.noNotchDetected
     }
 
     /// 사용 가능한 해상도 정보
     var availableModesInfo: String {
         guard let screen = NSScreen.main,
               let displayID = displayID(for: screen) else {
-            return "디스플레이 정보 없음"
+            return L10n.noDisplayInfo
         }
 
         guard let currentMode = CGDisplayCopyDisplayMode(displayID) else {
-            return "현재 모드 정보 없음"
+            return L10n.noCurrentModeInfo
         }
 
-        var info = "현재: \(currentMode.width)×\(currentMode.height)"
+        var info = L10n.currentResolution(width: currentMode.width, height: currentMode.height)
 
         if let belowMode = findBelowNotchMode(displayID: displayID, screen: screen, currentMode: currentMode) {
-            info += " → 변경: \(belowMode.width)×\(belowMode.height)"
+            info += L10n.changeResolution(width: belowMode.width, height: belowMode.height)
         } else {
-            info += " (노치 아래 모드 없음)"
+            info += L10n.noBelowNotchMode
         }
 
         return info

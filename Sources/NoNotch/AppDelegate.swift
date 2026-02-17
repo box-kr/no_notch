@@ -7,6 +7,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var statusItem: NSStatusItem!
     private let overlayManager = NotchOverlayManager.shared
+    private var toggleCount: Int = 0
+    private let coffeeShowInterval: Int = 3
 
     // MARK: - App Lifecycle
 
@@ -49,6 +51,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func toggleOverlay() {
         overlayManager.toggle()
         updateStatusIcon()
+
+        // 토글 횟수 카운트 → 3회마다 Buy Me a Coffee 다이얼로그 표시
+        toggleCount += 1
+        if toggleCount % coffeeShowInterval == 0 {
+            showBuyMeACoffeeDialog()
+        }
     }
 
     private func updateStatusIcon() {
@@ -66,8 +74,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         button.toolTip = overlayManager.isEnabled
-            ? "NoNotch: 활성화 (클릭하여 비활성화)"
-            : "NoNotch: 비활성화 (클릭하여 활성화)"
+            ? L10n.tooltipEnabled
+            : L10n.tooltipDisabled
     }
 
     // MARK: - Menu
@@ -76,7 +84,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let menu = NSMenu()
 
         // 토글 아이템
-        let toggleTitle = overlayManager.isEnabled ? "노치 바 비활성화" : "노치 바 활성화"
+        let toggleTitle = overlayManager.isEnabled ? L10n.disableNotchBar : L10n.enableNotchBar
         let toggleItem = NSMenuItem(title: toggleTitle, action: #selector(menuToggle), keyEquivalent: "")
         toggleItem.target = self
         menu.addItem(toggleItem)
@@ -85,7 +93,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // 로그인 시 자동 시작
         let launchItem = NSMenuItem(
-            title: "로그인 시 자동 시작",
+            title: L10n.launchAtLogin,
             action: #selector(toggleLaunchAtLogin),
             keyEquivalent: ""
         )
@@ -97,7 +105,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Buy Me a Coffee
         let coffeeItem = NSMenuItem(
-            title: "☕ Buy Me a Coffee",
+            title: L10n.buyMeACoffee,
             action: #selector(openBuyMeACoffee),
             keyEquivalent: ""
         )
@@ -119,7 +127,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem.separator())
 
         // 종료
-        let quitItem = NSMenuItem(title: "종료", action: #selector(quitApp), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: L10n.quit, action: #selector(quitApp), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
 

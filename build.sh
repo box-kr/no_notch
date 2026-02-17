@@ -28,6 +28,7 @@ swiftc \
     -target arm64-apple-macosx12.0 \
     "${PROJECT_DIR}/Sources/NoNotch/NotchOverlayManager.swift" \
     "${PROJECT_DIR}/Sources/NoNotch/LaunchAtLoginManager.swift" \
+    "${PROJECT_DIR}/Sources/NoNotch/Localization.swift" \
     "${PROJECT_DIR}/Sources/NoNotch/AppDelegate.swift" \
     "${PROJECT_DIR}/Sources/NoNotch/main.swift"
 
