@@ -8,6 +8,23 @@ PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR="${PROJECT_DIR}/build"
 APP_NAME="NoNotch"
 APP_BUNDLE="${BUILD_DIR}/${APP_NAME}.app"
+INFO_PLIST="${PROJECT_DIR}/Sources/NoNotch/Resources/Info.plist"
+
+# 버전 자동 증가 처리 (1.0.x)
+if [ -f "${INFO_PLIST}" ]; then
+    CURRENT_VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${INFO_PLIST}")
+    if [[ $CURRENT_VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+        MAJOR="${BASH_REMATCH[1]}"
+        MINOR="${BASH_REMATCH[2]}"
+        PATCH="${BASH_REMATCH[3]}"
+        NEW_PATCH=$((PATCH + 1))
+        NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+        
+        /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${NEW_VERSION}" "${INFO_PLIST}"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${NEW_VERSION}" "${INFO_PLIST}"
+        echo "🔄 버전 업데이트: ${CURRENT_VERSION} -> ${NEW_VERSION}"
+    fi
+fi
 
 echo "🔨 NoNotch 빌드 시작..."
 
@@ -34,6 +51,9 @@ swiftc \
 
 # Resources 복사 (Info.plist 포함)
 cp -r "${PROJECT_DIR}/Sources/NoNotch/Resources/"* "${APP_BUNDLE}/Contents/Resources/"
+
+# Info.plist를 올바른 위치로 이동
+mv "${APP_BUNDLE}/Contents/Resources/Info.plist" "${APP_BUNDLE}/Contents/Info.plist"
 
 echo "✅ 빌드 완료: ${APP_BUNDLE}"
 echo ""

@@ -83,6 +83,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func showMenu() {
         let menu = NSMenu()
 
+        // About NoNotch
+        let aboutItem = NSMenuItem(
+            title: "About NoNotch",
+            action: #selector(showAboutWindow),
+            keyEquivalent: ""
+        )
+        aboutItem.target = self
+        menu.addItem(aboutItem)
+
+        menu.addItem(NSMenuItem.separator())
+
         // 토글 아이템
         let toggleTitle = overlayManager.isEnabled ? L10n.disableNotchBar : L10n.enableNotchBar
         let toggleItem = NSMenuItem(title: toggleTitle, action: #selector(menuToggle), keyEquivalent: "")
@@ -103,7 +114,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         menu.addItem(NSMenuItem.separator())
 
-        // Buy Me a Coffee
         let coffeeItem = NSMenuItem(
             title: L10n.buyMeACoffee,
             action: #selector(openBuyMeACoffee),
@@ -146,6 +156,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func openBuyMeACoffee() {
         showBuyMeACoffeeDialog()
+    }
+
+    @objc private func showAboutWindow() {
+        NSApp.activate(ignoringOtherApps: true)
+        
+        var options: [NSApplication.AboutPanelOptionKey: Any] = [
+            .applicationName: "NoNotch"
+        ]
+        
+        if let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
+            // macOS About 윈도우에서는 .applicationVersion(굵은글씨)과 .version(괄호 안)을 사용합니다.
+            options[.applicationVersion] = version
+        }
+        
+        // 아이콘을 명시적으로 로드합니다.
+        if let icon = NSImage(named: "AppIcon.png") ?? NSImage(named: "AppIcon") {
+            options[.applicationIcon] = icon
+        } else if let iconPath = Bundle.main.path(forResource: "AppIcon", ofType: "png"),
+                  let iconImage = NSImage(contentsOfFile: iconPath) {
+            options[.applicationIcon] = iconImage
+        }
+        
+        NSApp.orderFrontStandardAboutPanel(options: options)
     }
 
     @objc private func quitApp() {
