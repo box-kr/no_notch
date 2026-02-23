@@ -32,87 +32,22 @@ macOS 노치가 있는 디스플레이에서 **메뉴바를 노치 없애주는*
 macOS **시스템 환경설정 > 일반 > 언어 및 지역** 의 기본 언어를 자동으로 감지합니다.  
 지원하지 않는 언어일 경우 영어(English)로 표시됩니다.
 
----
 
-## 🏗️ 프로젝트 구조
-
-```
-no_notch/
-├── Package.swift                        # Swift Package Manager 설정
-├── NoNotch.xcodeproj/                   # Xcode 프로젝트
-├── build.sh                             # 커맨드라인 빌드 스크립트
-├── README.md
-├── Sources/
-│   └── NoNotch/
-│       ├── main.swift                   # 앱 엔트리포인트
-│       ├── AppDelegate.swift            # 메뉴바 UI, 이벤트 처리, 후원 다이얼로그
-│       ├── NotchOverlayManager.swift    # 디스플레이 해상도 제어 핵심 로직
-│       ├── LaunchAtLoginManager.swift   # 로그인 시 자동 시작 관리
-│       ├── Localization.swift           # 다국어 문자열 관리 (ko/ja/zh/en)
-│       └── Resources/
-│           └── Info.plist               # 앱 번들 메타데이터
-└── build/                               # 빌드 산출물 (gitignored)
-```
-
----
-
-## 🛠️ 기술 스택
-
-| 항목 | 상세 |
-|------|------|
-| **언어** | Swift 5.9 |
-| **플랫폼** | macOS 12.0 (Monterey) 이상 |
-| **아키텍처** | arm64 (Apple Silicon) |
-| **UI 프레임워크** | AppKit (`NSStatusItem`, `NSMenu`, `NSWindow`) |
-| **디스플레이 제어** | CoreGraphics (`CGDisplaySetDisplayMode`, `CGDisplayCopyAllDisplayModes`) |
-| **웹 뷰** | WebKit (`WKWebView`) — Buy Me a Coffee 다이얼로그 |
-| **로그인 관리** | ServiceManagement (`SMAppService`, macOS 13+) |
-| **다국어** | `Locale.preferredLanguages` 기반 자체 구현 (`L10n` enum) |
-| **패키지 매니저** | Swift Package Manager |
-| **번들 ID** | `com.nonotch.app` |
-| **앱 타입** | 메뉴바 전용 (`LSUIElement: true`, Dock 아이콘 없음) |
-
----
-
-## 📦 빌드 방법
-
-### 방법 1: 빌드 스크립트 (권장)
-
-```bash
-chmod +x build.sh
-./build.sh
-```
-
-빌드 완료 후 `build/NoNotch.app` 이 생성됩니다.
-
-### 방법 2: Xcode
-
-1. `NoNotch.xcodeproj` 를 Xcode에서 열기
-2. Scheme: **NoNotch** 선택
-3. `Cmd + B` 빌드 또는 `Cmd + R` 실행
-
-### 방법 3: Swift Package Manager
-
-```bash
-swift build
-```
-
----
 
 ## 🚀 실행 및 설치
 
-### 실행
-
 ```bash
-open build/NoNotch.app
+# 커스텀 탭 레파지토리 등록
+brew tap box-kr/homebrew-nonotch
+
+# 애플리케이션 설치
+brew install --cask nonotch
 ```
 
-### Applications 폴더에 설치
-
+업데이트된 경우 사용자는 다음과 같이 업그레이드할 수 있습니다:
 ```bash
-cp -r build/NoNotch.app /Applications/
+brew upgrade nonotch
 ```
-
 ---
 
 ## 📖 사용법
@@ -141,24 +76,10 @@ cp -r build/NoNotch.app /Applications/
 
 > 💡 메뉴 텍스트는 macOS 시스템 언어에 따라 자동으로 변환됩니다.
 
-### Buy Me a Coffee 다이얼로그
 
-- 메뉴에서 **☕ Buy Me a Coffee** 클릭 시 앱 내 WebView 다이얼로그로 표시
-- 노치 바를 **3회 토글**할 때마다 자동으로 다이얼로그 표시
-
----
 
 ## 🔧 핵심 아키텍처
 
-### 모듈별 역할
-
-| 모듈 | 역할 |
-|------|------|
-| `main.swift` | `NSApplication` 설정, Dock 아이콘 숨김 (`.accessory`) |
-| `AppDelegate` | 상태바 아이콘, 좌/우클릭 이벤트, 메뉴 구성, 후원 다이얼로그 |
-| `NotchOverlayManager` | 디스플레이 모드 탐색·변경·복원, 화면 변경 감지 (Singleton) |
-| `LaunchAtLoginManager` | `SMAppService` 기반 로그인 항목 등록/해제 |
-| `L10n` | macOS 시스템 언어 감지, 4개 언어 번역 문자열 제공 |
 
 ### 디스플레이 모드 변경 전략 (`NotchOverlayManager`)
 
@@ -169,22 +90,6 @@ cp -r build/NoNotch.app /Applications/
 3. **같은 너비 상위** — 같은 너비, targetHeight보다 크지만 현재보다는 작은 모드
 4. **유사 너비** — ±100px 범위의 너비, 가장 큰 해상도
 
-### 다국어 구현 (`Localization.swift`)
-
-```swift
-// macOS 시스템 언어 자동 감지
-Locale.preferredLanguages.first  // e.g. "ko-KR", "ja-JP", "zh-Hans-CN", "en-US"
-→ 앞 2자리 추출 → AppLanguage enum 매칭 → 미지원 시 .en 폴백
-```
-
-### 상태 관리
-
-| 키 | 저장소 | 용도 |
-|----|--------|------|
-| `NoNotch_isEnabled` | `UserDefaults` | 활성화 상태 유지 |
-| `NoNotch_launchAtLogin` | `UserDefaults` | 자동 시작 설정 |
-
----
 
 ## ⚠️ 요구 사항
 
@@ -205,4 +110,4 @@ Locale.preferredLanguages.first  // e.g. "ko-KR", "ja-JP", "zh-Hans-CN", "en-US"
 
 ## 📄 라이선스
 
-Copyright © 2026. All rights reserved.
+Copyright © 2026. FunBox All rights reserved.
