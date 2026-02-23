@@ -1,113 +1,128 @@
 # NoNotch
 
-macOS 노치가 있는 디스플레이에서 **메뉴바를 노치 없애주는** 경량 유틸리티 앱입니다.
+A lightweight macOS utility application that **removes the notch** from your menu bar on MacBooks with notched displays.
 
-디스플레이 해상도를 노치 높이만큼 줄여 메뉴바가 노치에 가려지지 않도록 합니다.
+It works by automatically adjusting the display resolution to fit the area below the notch, ensuring your menu bar contents are never hidden.
 
 ---
 
-## ✨ 주요 기능
+## ✨ Features
 
-| 기능 | 설명 |
+| Feature | Description |
 |------|------|
-| **노치 우회** | 디스플레이 해상도를 노치 아래 영역에 맞게 자동 변경 |
-| **원클릭 토글** | 메뉴바 아이콘 좌클릭으로 즉시 활성화/비활성화 |
-| **상태 유지** | 앱 재시작 시 마지막 상태 자동 복원 (`UserDefaults`) |
-| **로그인 시 자동 시작** | `SMAppService`를 통한 macOS 네이티브 로그인 항목 등록 |
-| **화면 변경 감지** | 외부 모니터 연결/해제 시 자동 재적용 |
-| **Buy Me a Coffee** | 3회 토글마다 앱 내 WebView 다이얼로그로 후원 페이지 자동 표시 |
-| **다국어 지원** | 한국어 · 일본어 · 중국어 · 영어 (macOS 시스템 언어 자동 감지) |
+| **Notch Bypass** | Automatically changes display resolution to fit safely below the notch area. |
+| **One-Click Toggle** | Instantly enable/disable by left-clicking the menu bar icon. |
+| **State Persistence** | Automatically restores your last used state upon app restart (`UserDefaults`). |
+| **Launch at Login** | Native macOS login item registration via `SMAppService`. |
+| **Display Detection** | Automatically reapplies settings when connecting or disconnecting external monitors. |
+| **Buy Me a Coffee** | Displays a support page via in-app WebView dialog every 3 toggles. |
+| **Localization** | Supports English, Korean, Japanese, and Simplified Chinese (auto-detected). |
 
 ---
 
-## 🌐 지원 언어
+## 🌐 Supported Languages
 
-| 언어 | 코드 | 비고 |
+| Language | Code | Note |
 |------|------|------|
-| 🇰🇷 한국어 | `ko` | |
-| 🇯🇵 日本語 | `ja` | |
-| 🇨🇳 中文 | `zh` | 간체 |
-| 🇺🇸 English | `en` | 기본값 (폴백) |
+| 🇺🇸 English | `en` | Default (Fallback) |
+| 🇰🇷 Korean | `ko` | |
+| 🇯🇵 Japanese | `ja` | |
+| 🇨🇳 Chinese | `zh` | Simplified |
 
-macOS **시스템 환경설정 > 일반 > 언어 및 지역** 의 기본 언어를 자동으로 감지합니다.  
-지원하지 않는 언어일 경우 영어(English)로 표시됩니다.
+The app automatically detects your primary language from macOS **System Settings > General > Language & Region**.  
+If your system language is not supported, it defaults to English.
 
+---
 
-
-## 🚀 실행 및 설치
+## 🚀 Installation
 
 ```bash
-# 커스텀 탭 레파지토리 등록
+# Add the custom tap repository
 brew tap box-kr/homebrew-nonotch
 
-# 애플리케이션 설치
+# Install the application
 brew install --cask nonotch
 ```
 
-업데이트된 경우 사용자는 다음과 같이 업그레이드할 수 있습니다:
+To upgrade to a newer version:
 ```bash
 brew upgrade nonotch
 ```
+
 ---
 
-## 📖 사용법
+## 🚀 Post-Installation Guide
 
-### 기본 조작
+1. After installation, you can find and launch the application from the macOS `Applications` folder as shown below.
 
-- **좌클릭**: 노치 바 활성화/비활성화 토글
-- **우클릭**: 메뉴 열기
+![Application](./Application.png)
 
-### 메뉴 구성
+2. Once launched, the app icon will appear in your top Menu Bar.
+
+![Menu Bar Icon](./menu_bar_icon.png)
+
+3. Double-click (or click to Enable) the menu bar icon to activate the app. This will shift the display down, allowing you to see all menu bar items that were previously hidden behind the physical notch.
+
+---
+
+## 📖 Usage
+
+### Basic Controls
+
+- **Left Click**: Toggle Notch Bar Enable/Disable
+- **Right Click**: Open Menu
+
+### Menu Structure
 
 ```
 ┌─────────────────────────────────┐
-│ 노치 바 활성화 / 비활성화        │  ← Enable / Disable Notch Bar
+│ Enable / Disable Notch Bar      │  
 ├─────────────────────────────────┤
-│ 로그인 시 자동 시작        ✓/✗  │  ← Launch at Login
+│ Launch at Login          ✓/✗    │  
 ├─────────────────────────────────┤
 │ ☕ Buy Me a Coffee              │
 ├─────────────────────────────────┤
-│ 노치 감지됨 (높이: 32pt)        │  ← Notch detected (height: 32pt)
-│ 현재: 3024×1964 → 변경: ...     │  ← Current: 3024×1964 → ...
+│ Notch detected (height: 32pt)   │  
+│ Current: 3024×1964 → ...        │  
 ├─────────────────────────────────┤
-│ 종료                       ⌘Q  │  ← Quit
+│ Quit                       ⌘Q   │ 
 └─────────────────────────────────┘
 ```
 
-> 💡 메뉴 텍스트는 macOS 시스템 언어에 따라 자동으로 변환됩니다.
-
-
-
-## 🔧 핵심 아키텍처
-
-
-### 디스플레이 모드 변경 전략 (`NotchOverlayManager`)
-
-노치 아래에 맞는 최적의 디스플레이 모드를 4단계 전략으로 탐색합니다:
-
-1. **정확 일치** — 같은 너비 + (현재 높이 - 노치 높이) 모드
-2. **같은 너비 근접** — 같은 너비, targetHeight 이하 중 가장 큰 모드
-3. **같은 너비 상위** — 같은 너비, targetHeight보다 크지만 현재보다는 작은 모드
-4. **유사 너비** — ±100px 범위의 너비, 가장 큰 해상도
-
-
-## ⚠️ 요구 사항
-
-- macOS 12.0 (Monterey) 이상
-- Apple Silicon (arm64) Mac
-- 노치가 있는 디스플레이 (MacBook Pro 14"/16" 등)
-- 화면 녹화/접근성 권한이 필요할 수 있음 (디스플레이 모드 변경 시)
+> 💡 Menu text automatically translates based on your macOS system language.
 
 ---
 
-## ☕ 후원
+## 🔧 Core Architecture
 
-이 프로젝트가 유용하다면 커피 한 잔 사주세요!
+### Display Mode Switching Strategy (`NotchOverlayManager`)
+
+The app searches for the optimal display mode that fits below the notch using a 4-step strategy:
+
+1. **Exact Match** — Same width + (Current height - Notch height).
+2. **Same Width Nearest** — Same width, largest mode less than or equal to target height.
+3. **Same Width Upper** — Same width, greater than target height but smaller than current.
+4. **Similar Width** — Width within ±100px range, highest available resolution.
+
+---
+
+## ⚠️ Requirements
+
+- macOS 12.0 (Monterey) or later
+- Apple Silicon (arm64) Mac
+- Mac with a notched display (e.g., MacBook Pro 14"/16")
+- Screen Recording / Accessibility permissions may be required for display mode changes.
+
+---
+
+## ☕ Support
+
+If you find this project useful, consider buying me a coffee!
 
 👉 [Buy Me a Coffee](https://buymeacoffee.com/funbox.kr)
 
 ---
 
-## 📄 라이선스
+## 📄 License
 
 Copyright © 2026. FunBox All rights reserved.
