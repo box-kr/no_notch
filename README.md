@@ -93,6 +93,16 @@ brew upgrade nonotch
 
 ---
 
+## 📝 Release Notes (v1.0.46)
+
+- **Dialog Window Visibility Improvements**:
+  - Fixed an issue where the settings dialog persisted above all other windows, blocking content. It now acts as a standard window that can be layered naturally.
+  - Adjusted the application so the dialog is no longer completely hidden when you click away. It now remains accessible via the app switcher (Cmd + Tab).
+  - Improved compatibility with macOS Mission Control (Exposé) — the configuration window will now properly thumbnail and participate in your workspace overviews for easy access.
+- **UI Text Updates**: Updated dialog toggle button labels for improved clarity.
+
+---
+
 ## 🔧 Core Architecture
 
 ### Display Mode Switching Strategy (`NotchOverlayManager`)
