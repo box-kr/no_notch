@@ -93,7 +93,13 @@ brew upgrade nonotch
 
 ---
 
-## 📝 Release Notes (v1.0.46)
+## 📝 Release Notes (v1.0.47)
+
+- **Hide Notch (Black Menu Bar) Reliability Improvement**:
+  - Fixed an issue on newer macOS versions (Monterey and later) where transparent window overlays were ignored by the menu bar's blur effect.
+  - The app now perfectly hides the notch by dynamically synthesizing a black bar directly onto your desktop wallpaper. This ensures seamless and stable compatibility across multiple monitors and Mission Control spaces.
+
+## 📝 Previous Updates (v1.0.46)
 
 - **Dialog Window Visibility Improvements**:
   - Fixed an issue where the settings dialog persisted above all other windows, blocking content. It now acts as a standard window that can be layered naturally.
