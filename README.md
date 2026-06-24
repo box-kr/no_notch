@@ -93,7 +93,18 @@ brew upgrade nonotch
 
 ---
 
-## 📝 Release Notes (v1.0.47)
+## 📝 Release Notes (v1.0.84)
+
+- **Reliable Notch Detection in All Conditions**:
+  - Automatically detects the presence and height of your display notch even if your screen resolution is already scaled or if screen layouts change.
+- **Safe Startup & Flawless Full-Screen Restoration**:
+  - When launched on a display already set to hide the notch, the app runs safely without scaling the layout down further. Turning off the notch hider reliably restores your display back to its original full-screen resolution.
+- **More Intuitive Menu Options**:
+  - Re-aligned options to match expectations—selecting "Enable Notch Bar" restores the screen to its natural state (notch visible), while "Disable Notch Bar" adjusts the screen to keep the notch hidden.
+- **Instant Menu Bar Icon Updates**:
+  - The menu bar icon now instantly updates to reflect your screen's current status (hidden or visible) regardless of how the notch is being hidden (via resolution change or desktop wallpaper modification), resolving icon rendering lag.
+
+## 📝 Previous Updates (v1.0.47)
 
 - **Hide Notch (Black Menu Bar) Reliability Improvement**:
   - Fixed an issue on newer macOS versions (Monterey and later) where transparent window overlays were ignored by the menu bar's blur effect.
